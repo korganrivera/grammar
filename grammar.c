@@ -72,6 +72,9 @@
 
 // next time, finish str_in_list function.
 // also throw some free functions in there sometime.
+//
+// next time: problem with str_in_list() is that if I'm searching for a multipart word in the list, it won't work because of spaces .fix that. e.g.
+// "to eat" "to eat to read to fart". it won't find it. also searching for "read to" matches. I need a tsv or something instead.
 
 #include <stdio.h>
 #include <stdlib.h>
@@ -80,13 +83,24 @@
 enum gclass {unknown, noun, pronoun, verb, adjective, adverb, preposition, conjunction, article};
 
 char *enum_names[] = { "unknown", "noun", "pronoun", "verb", "adjective", "adverb", "preposition", "conjunction", "article" };
-
 typedef struct _word{
     char* w;            // the word.
     enum gclass type;   // what its grammatical type is.
     struct _word *next;
     struct _word *prev;
 }_word;
+
+char *PRONOUNS = "all another any anybody anyone anything aught both each each other either enough everybody everyone everything few he her hers herself him himself his I it itself many me mine most myself naught neither no one nobody none nothing nought one one another other others ought ours ourself ourselves several she some somebody someone something such suchlike that thee theirs theirself theirselves them themself themselves there these they thine this those thou thy thyself us we what whatever whatsoever whether which whichever whichsoever who whoever whom whomever whomso whomsoever whose whosever whosesoever whoso whosoever ye yon you yours yourself yourselves";
+
+char *PREPOSITIONS = "aboard about above across after against along amid among anti around as at before behind below beneath beside besides between beyond but by concerning considering despite down during except excepting excluding following for from in inside into like minus near of off on onto opposite outside over past per plus regarding round save since than through to toward towards under underneath unlike until up upon versus via with within without";
+
+char *CONJUNCTIONS = "and but or because nor for yet so although since";
+
+char *VERBS = "am are is was be were been has have had do did does done say said says go goes went gone get gets got gotten make makes made know knows knew known think thinks thought take takes took taken see sees saw seen come comes came want wants wanted look looks looked use uses used find finds found give gives gave given tell tells told work works worked call calls called try tries tried ask asks asked need needs needed feel feels felt become becomes became";
+
+char *NOUNS = "cat cats dog dogs shit shits table tables time year years people person way ways day days man men thing things woman women life lives child children world worlds school schools state states family families student students group groups country countries problem problems hand hands part parts place places case cases week weeks company companies system systems program programs question questions work government governments number numbers night nights point points home homes water fish fishes";
+
+char *ADJECTIVES = "other new good high old great big American small large national young different black long little important political bad white real best right social only public sure low early able human local late hard major better economic strong possible whole free military true federal international full special easy clear recent certain personal open red difficult available likely short single medical current wrong private past foreign fine common poor natural significant similar hot dead central happy serious ready simple left physical general environmental financial blue democratic dark various entire close legal religious cold final main green nice huge popular traditional cultural";
 
 // print a linked list given a pointer to the root node.
 void print_list(_word* rt);
@@ -170,13 +184,18 @@ void parse_list(_word* rt){
     while(rt){
             if(str_in_list(rt->w, "the a an"))
                 rt->type = article;
-            else if(str_in_list(rt->w, "and but or because nor for yet so although since"))
+            else if(str_in_list(rt->w, CONJUNCTIONS))
                 rt->type = conjunction;
-            else if(str_in_list(rt->w, "aboard about above across after against along amid among anti around as at before behind below beneath beside besides between beyond but by concerning considering despite down during except excepting excluding following for from in inside into like minus near of off on onto opposite outside over past per plus regarding round save since than through to toward towards under underneath unlike until up upon versus via with within without"))
+            else if(str_in_list(rt->w, PREPOSITIONS))
                 rt->type = preposition;
-            else if(str_in_list(rt->w, "all another any anybody anyone anything aught both each each other either enough everybody everyone everything few he her hers herself him himself his I it itself many me mine most myself naught neither no one nobody none nothing nought one one another other others ought ours ourself ourselves several she some somebody someone something such suchlike that thee theirs theirself theirselves them themself themselves there these they thine this those thou thy thyself us we what whatever whatsoever whether which whichever whichsoever who whoever whom whomever whomso whomsoever whose whosever whosesoever whoso whosoever ye yon you yours yourself yourselves"))
+            else if(str_in_list(rt->w, PRONOUNS))
                 rt->type = pronoun;
-
+            else if(str_in_list(rt->w, VERBS))
+                rt->type = verb;
+            else if(str_in_list(rt->w, NOUNS))
+                rt->type = noun;
+            else if(str_in_list(rt->w, ADJECTIVES))
+                rt->type = adjective;
 
         rt = rt->next;
     }
