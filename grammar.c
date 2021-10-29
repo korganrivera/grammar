@@ -1,14 +1,16 @@
 // reads a sentence from the user.
-// identifies each words grammar role.
-// if word is unknown, asks the user. remembers next time.
+// identifies each word's grammar role.
+// if word is unknown, asks the user. remembers next time. (maybe. might just log unknown stuff and let user add it.)
 // e.g.
-// I gave the red toy to a very ugly dog and it shat blood.
-// n v def_art adj n prep indef_art adv adj n conj n v n.
+// I gave the     red toy to   a         very ugly dog and  it shat blood.
+// n v    def_art adj n   prep indef_art adv  adj  n   conj n  v    n.
 // or
 // n:subj v:past art:def adj n_dir_obj prep art:indef adv adj n:ind_obj conj n:subj v:past n:dir_obj
 //
 // Something like that.
 // Then after that, I could maybe work out noun phrases, subclauses, etc.
+
+// for words that could be nouns or verbs, you can try to evaluate both with a sentence tree to see which works. If both work, then fuck you. If one works, then maybe it's more likely to be the correct one? Why am I doing this?
 
 // grammar parts
 // pronouns
@@ -69,20 +71,23 @@
 //
 //
 // For now, assume everything is lowercase because dealing with 'the' and 'The' is annoying. I can fix it later when proper nouns might be an issue.
-
-// next time, finish str_in_list function.
+// at some point, come up with a way to store info about words. I need a database.
+//
 // also throw some free functions in there sometime.
 //
 // next time: problem with str_in_list() is that if I'm searching for a multipart word in the list, it won't work because of spaces .fix that. e.g.
 // "to eat" "to eat to read to fart". it won't find it. also searching for "read to" matches. I need a tsv or something instead.
-
+// once this works well enough, use it to translate lang belta <> english.
+// process will basically be convert words to their belta then make adjectives post position, and figure out rest later.
+//
+//
 #include <stdio.h>
 #include <stdlib.h>
 #include <string.h>
 
 enum gclass {unknown, noun, pronoun, verb, adjective, adverb, preposition, conjunction, article};
-
 char *enum_names[] = { "unknown", "noun", "pronoun", "verb", "adjective", "adverb", "preposition", "conjunction", "article" };
+
 typedef struct _word{
     char* w;            // the word.
     enum gclass type;   // what its grammatical type is.
@@ -100,7 +105,7 @@ char *VERBS = "am are is was be were been has have had do did does done say said
 
 char *NOUNS = "cat cats dog dogs shit shits table tables time year years people person way ways day days man men thing things woman women life lives child children world worlds school schools state states family families student students group groups country countries problem problems hand hands part parts place places case cases week weeks company companies system systems program programs question questions work government governments number numbers night nights point points home homes water fish fishes";
 
-char *ADJECTIVES = "other new good high old great big American small large national young different black long little important political bad white real best right social only public sure low early able human local late hard major better economic strong possible whole free military true federal international full special easy clear recent certain personal open red difficult available likely short single medical current wrong private past foreign fine common poor natural significant similar hot dead central happy serious ready simple left physical general environmental financial blue democratic dark various entire close legal religious cold final main green nice huge popular traditional cultural";
+char *ADJECTIVES = "other new good high old great big American small large national young different black long little important political bad white real best right social only public sure low early able human local late hard major better economic strong possible whole free military true federal international full special easy clear recent certain personal open red difficult available likely short single medical current wrong private past foreign fine common poor natural significant similar hot dead central happy serious ready simple left physical general environmental financial blue democratic dark various entire close legal religious cold final main green nice huge popular traditional cultural my your his her its our their";
 
 // print a linked list given a pointer to the root node.
 void print_list(_word* rt);
@@ -109,7 +114,7 @@ void print_list(_word* rt);
 void parse_list(_word* rt);
 
 // find given string in list of strings. Return 1 if found, 0 otherwise.
-// Differs from strstr() because string can't be a subword, has to be a whole
+// Differs from strstr() because string can't be a subword, must be a whole
 // word.
 int str_in_list(char* str, char* list);
 
@@ -149,7 +154,6 @@ int main(int argc, char **argv){
     }
     curr->next = NULL;
 
-    // check by printing list.
     //print_list(root);
 
     // do a preliminary ugly rule-based parse just to see.
@@ -161,7 +165,6 @@ int main(int argc, char **argv){
     // work on importing a list of data to determine grammar types.
     // sketch out how to figure out which type it is if more than one.
     // deal with phrases.
-
 }
 
 
